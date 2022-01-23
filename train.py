@@ -10,34 +10,35 @@ from time import gmtime, strftime
 import time
 import os
 
-
 # using GPU numbered 0
-os.environ["CUDA_VISIBLE_DEVICES"]='1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+
 
 def restore(sess):
-     if FLAGS.restore_previous_if_exists:
+    if FLAGS.restore_previous_if_exists:
         try:
             checkpoint_path = tf.train.latest_checkpoint(FLAGS.train_dir)
-            restorer = tf.train.Saver()
+            restorer = tf.compat.v1.train.Saver()
             restorer.restore(sess, checkpoint_path)
-            print ('restored previous model %s from %s'\
-                    %(checkpoint_path, FLAGS.train_dir))
+            print('restored previous model %s from %s' \
+                  % (checkpoint_path, FLAGS.train_dir))
             time.sleep(2)
             return
         except:
-            print ('--restore_previous_if_exists is set, but failed to restore in %s %s'\
-                    % (FLAGS.train_dir, checkpoint_path))
+            print('--restore_previous_if_exists is set, but failed to restore in %s %s' \
+                  % (FLAGS.train_dir, checkpoint_path))
             time.sleep(2)
+
 
 def train():
     name, seqLen, seq_feature, pair_feature, label = \
         dataset.get_dataset('train', FLAGS.data_dir)
-    data_queue = tf.RandomShuffleQueue(capacity=32, min_after_dequeue=16,
-            dtypes=(name.dtype, seqLen.dtype,
-                seq_feature.dtype, pair_feature.dtype, label.dtype))
+    data_queue = tf.queue.RandomShuffleQueue(capacity=32, min_after_dequeue=16,
+                                             dtypes=(name.dtype, seqLen.dtype,
+                                                     seq_feature.dtype, pair_feature.dtype, label.dtype))
     enqueue_op = data_queue.enqueue((name, seqLen, seq_feature, pair_feature, label))
-    data_queue_runner = tf.train.QueueRunner(data_queue, [enqueue_op] * 4)
-    tf.add_to_collection(tf.GraphKeys.QUEUE_RUNNERS, data_queue_runner)
+    data_queue_runner = tf.compat.v1.train.QueueRunner(data_queue, [enqueue_op] * 4)
+    tf.compat.v1.add_to_collection(tf.compat.v1.GraphKeys.QUEUE_RUNNERS, data_queue_runner)
     (name, seqLen, seq_feature, pair_feature, label) = data_queue.dequeue()
 
     input_1d = tf.reshape(seq_feature, (1, seqLen, 26))
@@ -45,64 +46,66 @@ def train():
     label = tf.reshape(label, (1, seqLen, seqLen))
 
     output = network.build(input_1d, input_2d, label,
-            FLAGS.filter_size_1d, FLAGS.filter_size_2d,
-            FLAGS.block_num_1d, FLAGS.block_num_2d,
-            regulation=True, batch_norm=True)
+                           FLAGS.filter_size_1d, FLAGS.filter_size_2d,
+                           FLAGS.block_num_1d, FLAGS.block_num_2d,
+                           regulation=True, batch_norm=True)
     prob = output['output_prob']
     loss = output['loss']
 
-    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+    train_step = tf.compat.v1.train.GradientDescentOptimizer(0.01).minimize(loss)
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.80)
-    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-    init_op = tf.group(tf.global_variables_initializer(),
-            tf.local_variables_initializer())
+    gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.80)
+    sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
+    init_op = tf.group(tf.compat.v1.global_variables_initializer(),
+                       tf.compat.v1.local_variables_initializer())
     sess.run(init_op)
-    
+
     # save log
-    summary_op = tf.summary.merge_all()
+    summary_op = tf.compat.v1.summary.merge_all()
     logdir = os.path.join(FLAGS.train_dir, strftime('%Y%m%d%H%M%S', gmtime()))
     if not os.path.exists(logdir):
         os.makedirs(logdir)
-    summary_writer = tf.summary.FileWriter(logdir, graph=sess.graph)
+    summary_writer = tf.compat.v1.summary.FileWriter(logdir, graph=sess.graph)
 
-    #restore model
+    # restore model
     restore(sess)
 
     # main loop
     coord = tf.train.Coordinator()
     threads = []
-    for qr in tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS):
+    for qr in tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.QUEUE_RUNNERS):
         threads.extend(qr.create_threads(sess, coord=coord, daemon=True, start=True))
-    tf.train.start_queue_runners(sess=sess, coord=coord)
-    
-    saver = tf.train.Saver(max_to_keep=20)
+    tf.compat.v1.train.start_queue_runners(sess=sess, coord=coord)
+
+    saver = tf.compat.v1.train.Saver(max_to_keep=20)
     # train iteration
-    for step in xrange(FLAGS.max_iters):
+    for step in range(FLAGS.max_iters):
         _, ids, L, los, output_prob = \
-                sess.run([train_step, name, seqLen, loss, prob])
-        print "iter %d: id = %s, seqLen = %3d, loss = %.4f" %(step, ids, L, los)
+            sess.run([train_step, name, seqLen, loss, prob])
+        print("iter %d: id = %s, seqLen = %3d, loss = %.4f" % (step, ids, L, los))
 
         if step % 100 == 0:
             summary_str = sess.run(summary_op)
             summary_writer.add_summary(summary_str, step)
             summary_writer.flush()
-        
+
         if (step % 10000 == 0 or step + 1 == FLAGS.max_iters) and step != 0:
             checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
             saver.save(sess, checkpoint_path, global_step=step, write_meta_graph=False)
 
+
 def test():
-    input_1d = tf.constant(np.random.rand(1,10,26).astype(np.float32))
-    input_2d = tf.constant(np.random.rand(1,10,10,5).astype(np.float32))
-    label = tf.constant(np.random.randint(2, size=(1,10,10)))
+    input_1d = tf.constant(np.random.rand(1, 10, 26).astype(np.float32))
+    input_2d = tf.constant(np.random.rand(1, 10, 10, 5).astype(np.float32))
+    label = tf.constant(np.random.randint(2, size=(1, 10, 10)))
 
     output = network.build(input_1d, input_2d, label)
     prob = output['output_prob']
-    
-    init = tf.initialize_all_variables()
-    sess = tf.Session()
+
+    init = tf.compat.v1.initialize_all_variables()
+    sess = tf.compat.v1.Session()
     sess.run(init)
-    print sess.run(prob)
+    print(sess.run(prob))
+
 
 train()

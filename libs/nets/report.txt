@@ -1,0 +1,78 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 1 files
+Detected 9 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: network.py
+--------------------------------------------------------------------------------
+network.py:11:15: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+network.py:30:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+network.py:31:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+network.py:32:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+network.py:54:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+network.py:64:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+network.py:90:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+network.py:100:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+network.py:170:23: ERROR: Using member tf.contrib.layers.apply_regularization in deprecated module tf.contrib. tf.contrib.layers.apply_regularization cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+================================================================================
+Detailed log follows:
+
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'network.py'
+ outputting to 'new.py'
+--------------------------------------------------------------------------------
+
+8:18: INFO: Renamed 'tf.truncated_normal' to 'tf.random.truncated_normal'
+11:15: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+11:15: INFO: Renamed 'tf.get_variable' to 'tf.compat.v1.get_variable'
+12:28: INFO: tf.random_normal_initializer requires manual check. Initializers no longer have the dtype argument in the constructor or partition_info argument in the __call__ method.
+The calls have been converted to compat.v1 for safety (even though they may already have been correct).
+12:28: INFO: Renamed 'tf.random_normal_initializer' to 'tf.compat.v1.random_normal_initializer'
+22:8: INFO: Added keywords to args of function 'tf.shape'
+28:16: INFO: Added keywords to args of function 'tf.transpose'
+30:11: INFO: Added keywords to args of function 'tf.nn.embedding_lookup'
+30:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+31:11: INFO: Added keywords to args of function 'tf.nn.embedding_lookup'
+31:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+32:11: INFO: Added keywords to args of function 'tf.nn.embedding_lookup'
+32:11: WARNING: tf.nn.embedding_lookup requires manual check. `partition_strategy` has been removed from tf.nn.embedding_lookup.  The 'div' strategy will be used by default.
+36:13: INFO: Added keywords to args of function 'tf.transpose'
+45:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+51:14: INFO: Added keywords to args of function 'tf.nn.conv1d'
+51:14: INFO: Renamed keyword argument for tf.nn.conv1d from value to input
+54:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+61:14: INFO: Added keywords to args of function 'tf.nn.conv1d'
+61:14: INFO: Renamed keyword argument for tf.nn.conv1d from value to input
+64:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+69:20: INFO: Added keywords to args of function 'tf.pad'
+81:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+87:14: INFO: Added keywords to args of function 'tf.nn.conv2d'
+87:14: INFO: Renamed keyword argument for tf.nn.conv2d from filter to filters
+90:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+97:14: INFO: Added keywords to args of function 'tf.nn.conv2d'
+97:14: INFO: Renamed keyword argument for tf.nn.conv2d from filter to filters
+100:18: ERROR: Using member tf.contrib.layers.batch_norm in deprecated module tf.contrib. tf.contrib.layers.batch_norm cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+105:20: INFO: Added keywords to args of function 'tf.pad'
+118:8: INFO: Renamed 'tf.py_func' to 'tf.compat.v1.py_func'
+119:11: INFO: Added keywords to args of function 'tf.reduce_mean'
+119:38: INFO: Renamed 'tf.log' to 'tf.math.log'
+128:22: INFO: Multiplying scale arg of tf.contrib.layers.l2_regularizer by half to what tf.keras.regularizers.l2 expects.
+
+143:9: INFO: `name` passed to `name_scope`. Because you may be re-entering an existing scope, it is not safe to convert automatically,  the v2 name_scope does not support re-entering scopes by name.
+
+143:9: INFO: Renamed 'tf.name_scope' to 'tf.compat.v1.name_scope'
+161:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+164:36: INFO: Added keywords to args of function 'tf.nn.conv2d'
+164:36: INFO: Renamed keyword argument for tf.nn.conv2d from filter to filters
+166:9: INFO: `name` passed to `name_scope`. Because you may be re-entering an existing scope, it is not safe to convert automatically,  the v2 name_scope does not support re-entering scopes by name.
+
+166:9: INFO: Renamed 'tf.name_scope' to 'tf.compat.v1.name_scope'
+169:28: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+169:46: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+170:23: ERROR: Using member tf.contrib.layers.apply_regularization in deprecated module tf.contrib. tf.contrib.layers.apply_regularization cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+172:8: INFO: tf.summary.scalar requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+172:8: INFO: Renamed 'tf.summary.scalar' to 'tf.compat.v1.summary.scalar'
+--------------------------------------------------------------------------------
+

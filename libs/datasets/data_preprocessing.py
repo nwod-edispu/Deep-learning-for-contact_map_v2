@@ -59,14 +59,14 @@ def add_to_tfrecord(records_dir, split_name, infos):
     num_per_shard = int(math.ceil(len(infos) / float(num_shards)))
       
     with tf.Graph().as_default(), tf.device('/cpu:0'):
-        with tf.Session('') as sess:
+        with tf.compat.v1.Session('') as sess:
             for shard_id in range(num_shards):
                 record_filename = get_dataset_filename(records_dir, split_name, shard_id, num_shards)
-                options = tf.python_io.TFRecordOptions(TFRecordCompressionType.ZLIB)
-                with tf.python_io.TFRecordWriter(record_filename, options=options) as tfrecord_writer:
+                options = tf.io.TFRecordOptions(TFRecordCompressionType.ZLIB)
+                with tf.io.TFRecordWriter(record_filename, options=options) as tfrecord_writer:
                     start_ndx = shard_id * num_per_shard
                     end_ndx = min((shard_id + 1) * num_per_shard, len(infos))
-                    print "processing %s_data from %d to %d..." %(split_name, start_ndx, end_ndx)
+                    print ("processing %s_data from %d to %d..." %(split_name, start_ndx, end_ndx))
                     for i in range(start_ndx, end_ndx):
                         info = infos[i]
                         name, seqLen, seq_feature, pair_feature, label = extract_single(info)

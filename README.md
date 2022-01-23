@@ -2,7 +2,7 @@
 
 Forked from 
 
-[here]:https://github.com/doubleQ2018/Deep-learning-for-contact_map_v2
+[here](https://github.com/doubleQ2018/Deep-learning-for-contact_map_v2)
 
 
 
